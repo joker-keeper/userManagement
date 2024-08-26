@@ -1,44 +1,57 @@
 <template>
   <div>
-    <el-input v-model="keyword" placeholder="Search users..." @input="searchUsers" style="margin-bottom: 20px;"></el-input>
-    <el-table :data="paginatedUsers" style="width: 100%;">
+    <div class="header">
+      <span class="welcome-message">欢迎您，{{ currentUser }}</span>
+      <el-button type="text" class="logout-button" @click="handleLogout">退出</el-button>
+    </div>
+    <el-input
+      v-model="keyword"
+      placeholder="Search users..."
+      @input="searchUsers"
+      class="search-input"
+    ></el-input>
+    <el-table :data="paginatedUsers" class="user-table">
       <el-table-column prop="username" label="Username">
-        <template slot-scope="scope">
+        <template #default="{ row }">
           <el-input
-            v-if="scope.row.isEditing"
-            v-model="scope.row.username"
+            v-if="row.isEditing"
+            v-model="row.username"
             placeholder="Edit username"
+            class="edit-input"
           ></el-input>
-          <span v-else>{{ scope.row.username }}</span>
+          <span v-else>{{ row.username }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="email" label="Email">
-        <template slot-scope="scope">
+      <el-table-column prop="email" label="Password">
+        <template #default="{ row }">
           <el-input
-            v-if="scope.row.isEditing"
-            v-model="scope.row.email"
-            placeholder="Edit email"
+            v-if="row.isEditing"
+            v-model="row.email"
+            placeholder="Edit password"
+            class="edit-input"
           ></el-input>
-          <span v-else>{{ scope.row.email }}</span>
+          <span v-else>{{ row.email }}</span>
         </template>
       </el-table-column>
       <el-table-column label="Actions">
-        <template slot-scope="scope">
+        <template #default="{ row }">
           <el-button
-            v-if="!scope.row.isEditing"
-            @click="editUser(scope.row)"
+            v-if="!row.isEditing"
+            @click="editUser(row)"
+            type="primary"
           >Edit</el-button>
           <el-button
-            v-if="scope.row.isEditing"
-            @click="saveUser(scope.row)"
+            v-if="row.isEditing"
+            @click="saveUser(row)"
+            type="success"
           >Save</el-button>
           <el-button
-            v-if="scope.row.isEditing"
-            @click="cancelEdit(scope.row)"
+            v-if="row.isEditing"
+            @click="cancelEdit(row)"
             type="warning"
           >Cancel</el-button>
           <el-button
-            @click="deleteUser(scope.row.id)"
+            @click="deleteUser(row.id)"
             type="danger"
           >Delete</el-button>
         </template>
@@ -58,7 +71,7 @@
           <el-form-item label="Username">
             <el-input v-model="newUser.username"></el-input>
           </el-form-item>
-          <el-form-item label="Email">
+          <el-form-item label="Password">
             <el-input v-model="newUser.email"></el-input>
           </el-form-item>
         </el-form>
@@ -73,7 +86,7 @@
         :page-size="pageSize"
         :total="totalUsers"
         layout="prev, pager, next, jumper"
-        style="margin-top: 20px;"
+        class="pagination"
       ></el-pagination>
     </div>
   </div>
@@ -92,6 +105,7 @@ export default {
         username: '',
         email: ''
       },
+      currentUser: '',
       currentPage: 1,
       pageSize: 10,
       totalUsers: 0
@@ -112,7 +126,15 @@ export default {
       return this.filteredUsers.slice(start, end);
     }
   },
+  created() {
+    this.currentUser = localStorage.getItem('username') || 'Guest';
+  },
   methods: {
+    handleLogout() {
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('username');
+      this.$router.push('/login');
+    },
     async fetchUsers() {
       try {
         const response = await fetch('http://localhost:8080/api/users');
@@ -223,13 +245,47 @@ export default {
 </script>
 
 <style scoped>
-.add-user-button {
-  margin-bottom: 20px;
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.welcome-message {
+  font-size: 16px;
+  color: #333;
+}
+
+.logout-button {
+  color: #409EFF;
+}
+
+.search-input {
+  margin-top: 15px;
+  margin-bottom: 15px;
+  width: 300px;
+}
+
+.user-table {
+  width: 100%;
+}
+
+.edit-input {
+  width: 100%;
 }
 
 .pagination-container {
   margin-top: 20px;
-  text-align: right;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.add-user-button {
+  margin-bottom: 20px;
 }
 
 .add-user-dialog .el-dialog__header {
@@ -249,5 +305,9 @@ export default {
 .dialog-title {
   font-size: 18px;
   font-weight: bold;
+}
+
+.pagination {
+  margin-top: 20px;
 }
 </style>

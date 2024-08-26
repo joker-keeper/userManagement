@@ -31,6 +31,11 @@ public class UserService {
     }
 
     public List<User> searchUsers(String keyword) {
-        return userRepository.findByUsernameContaining(keyword);
+        return userRepository.findByUsernameContainingOrEmailContaining(keyword,keyword);
     }
+
+    public Optional<User> getUserByUsernameAndEmail(String username, String email) {
+        return userRepository.findByUsernameAndEmail(username, email);
+    }
+
 }

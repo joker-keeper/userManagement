@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
-
 @CrossOrigin(origins = "http://localhost:8081")
 @RestController
 @RequestMapping("/api/users")
@@ -54,4 +53,17 @@ public class UserController {
         }
         return ResponseEntity.notFound().build();
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody User loginData) {
+        System.out.println("Received login data: " + loginData);
+        Optional<User> user = userService.getUserByUsernameAndEmail(loginData.getUsername(), loginData.getEmail());
+
+        if (user.isPresent()) {
+            return ResponseEntity.ok("Login successful");
+        } else {
+            return ResponseEntity.status(401).body("Invalid username or email");
+        }
+    }
+
 }

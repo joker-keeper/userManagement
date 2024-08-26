@@ -1,20 +1,16 @@
 import Vue from 'vue';
-import App from './App';
+import App from './App.vue';
 import router from './router';
-
-// 引入 Element UI
+import axios from 'axios';
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 
-// 使用 Element UI
-Vue.use(ElementUI);
-
 Vue.config.productionTip = false;
+Vue.use(ElementUI);
+// 配置全局的axios
+Vue.prototype.$http = axios;
 
-/* eslint-disable no-new */
 new Vue({
-  el: '#app',
   router,
-  components: { App },
-  template: '<App/>'
-});
+  render: h => h(App),
+}).$mount('#app');

@@ -1,17 +1,13 @@
 <template>
   <div id="app">
-    <UserList />
+    <router-view />  <!-- 这里用于渲染路由对应的组件 -->
   </div>
 </template>
 
 <script>
-import UserList from './components/UserList.vue';
 export default {
   name: 'App',
-  components:{
-    UserList
-  }
-}
+};
 </script>
 
 <style>
@@ -21,6 +17,5 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
 }
 </style>
